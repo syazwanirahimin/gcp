@@ -1,19 +1,8 @@
-- name: 'gcr.io/$PROJECT_ID/docker-compose'
-  id: Compose-build-cloudProxy
-  args: ['build']
-
-- name: 'gcr.io/$PROJECT_ID/docker-compose'
-  id: Compose-up-cloudProxy
-  args: ['up', '--timeout', '1', '--no-build', '-d']
-
-- name: 'bash'
-  id: Warm-up-cloudProxy
-  args: ['sleep', '5s']
-
-- name: 'gcr.io/cloud-builders/docker'
-  id: Artisan-Migrate
-  args: ['exec', '-i', 'workspace_app_1', 'php', 'artisan', 'migrate']
-
-- name: 'gcr.io/$PROJECT_ID/docker-compose'
-  id: Compose-down-cloudProxy
-  args: ['down', '-v']
+steps:
+  - name: 'gcr.io/cloud-builders/docker'
+    args: [ 'build', '-t', 'gcr.io/$PROJECT_ID/bq-to-ftp', '.' , '-f', 'Dockerfile']
+  # push the container image to Container Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'gcr.io/$PROJECT_ID/bq-to-ftp']
+images:
+  - 'gcr.io/$PROJECT_ID/bq-to-ftp'
