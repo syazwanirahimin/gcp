@@ -1,11 +1,19 @@
-steps:
-    - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
-    entrypoint: 'bash'
-    args:
-        - '-c'
-        - |
-          gcloud config set app/cloud_build_timeout 3600 \
-          && gcloud app deploy -q --promote -v=$BUILD_ID \
-          --project=$PROJECT_ID
+- name: 'gcr.io/$PROJECT_ID/docker-compose'
+  id: Compose-build-cloudProxy
+  args: ['build']
 
-timeout: '3600s'
+- name: 'gcr.io/$PROJECT_ID/docker-compose'
+  id: Compose-up-cloudProxy
+  args: ['up', '--timeout', '1', '--no-build', '-d']
+
+- name: 'bash'
+  id: Warm-up-cloudProxy
+  args: ['sleep', '5s']
+
+- name: 'gcr.io/cloud-builders/docker'
+  id: Artisan-Migrate
+  args: ['exec', '-i', 'workspace_app_1', 'php', 'artisan', 'migrate']
+
+- name: 'gcr.io/$PROJECT_ID/docker-compose'
+  id: Compose-down-cloudProxy
+  args: ['down', '-v']
