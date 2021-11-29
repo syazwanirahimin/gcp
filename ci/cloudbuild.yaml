@@ -1,8 +1,8 @@
 steps:
   # Entrypoint, timeout and environment variables
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
-    entrypoint: 'gcloud'
-    timeout: 240s
+    entrypoint: 'bash'
+    timeout: '3600s'
     args:
         - '-c'
         - |
